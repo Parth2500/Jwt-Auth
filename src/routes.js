@@ -7,15 +7,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const jose = require("node-jose");
 const User = require("./models");
-let privateKey = {};
-
-createJoseKey()
-  .then((joseKey) => {
-    privateKey = joseKey;
-  })
-  .catch((error) => {
-    console.error("Error in yourAsyncFunction:", error);
-  });
 
 // Registration
 router.post("/register", async (req, res) => {
@@ -64,7 +55,7 @@ router.post("/login", async (req, res) => {
       );
 
       res.json({
-        token: await encryptToken(token),
+        token: token,
         user: { _id: user._id, username: user.username, email: user.email },
       });
     } else {
@@ -109,11 +100,7 @@ async function authenticateToken(req, res, next) {
   }
 
   try {
-    // Decrypt the token using the private key
-    const decryptedToken = await decryptToken(token);
-
-    // Verify the signature of the decrypted payload using the public key
-    jwt.verify(decryptedToken, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
         return res.sendStatus(403);
       }
@@ -123,54 +110,6 @@ async function authenticateToken(req, res, next) {
   } catch (error) {
     console.error(error);
     res.sendStatus(403);
-  }
-}
-
-async function createJoseKey() {
-  try {
-    // Create a new key store
-    const keystore = jose.JWK.createKeyStore();
-
-    // Generate a key with the specified parameters
-    const key = await keystore.generate("oct", 256, { alg: "A256GCM" });
-
-    console.log("JOSE Key created successfully:", key.toJSON());
-    return key;
-  } catch (error) {
-    console.error("Error creating JOSE Key:", error);
-    throw error;
-  }
-}
-
-// Function to encrypt a token using JWE
-async function encryptToken(token) {
-  try {
-    const encryptedToken = await jose.JWE.createEncrypt(
-      { format: "compact", cleartext: Buffer.from(token) },
-      { key: privateKey }
-    )
-      .update(token)
-      .final();
-
-    return encryptedToken;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error encrypting token");
-  }
-}
-
-// Function to decrypt an encrypted token using JWE
-async function decryptToken(encryptedToken) {
-  try {
-    // Decrypt the token using the private key
-    const decryptedToken = await jose.JWE.createDecrypt(privateKey).decrypt(
-      encryptedToken
-    );
-
-    return decryptedToken.payload.toString();
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error decrypting token");
   }
 }
 
