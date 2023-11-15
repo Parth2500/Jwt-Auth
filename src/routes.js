@@ -5,7 +5,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const jose = require("node-jose");
 const User = require("./models");
 
 // Registration
