@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "c2f6ba71-6340-4662-9a7c-0d2b942f30d9",
+		"name": "Jwt-Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19736248"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"email\": \"testuser@example.com\",\r\n    \"password\": \"password123\",\r\n    \"birthdate\": \"1990-01-01\" // Provide the birthdate in YYYY-MM-DD format\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\",\r\n    \"password\": \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIiwia2lkIjoicmx2d0FlWkpEWkxKbWcxOHYyT2dndU1GWHY0eEx1M21WUmhSeEFOTXp6TSJ9..uNkNrlQRIPQdocd5.ZPo0ULKqYSPhiN5WNDJIaJhZPpdi6WMukXkQXqrDM1548_E90RcsihsmOUrIUxSClWWwYZ1LI6P4x0UpD2rzPkNfan8oP-tMPmmGXLFmi8lKWwjcPMX64LHNJ2DZfztffRnXL1dH5PS_Ve04mlmpiJiEkTrFJtjC5U9hlHsbBvOz_mvJfalFEyJhASpIPJ3uoaYfT1jD6EYNjsu1sJrBXRSNfra6TvFWK3KDr_-MR95hP8iJEg_RN3GqdHkwMqgo0e2jWu60SSCG.ns7ZrDjTDSDn0Ht4KIx-Fg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"6554bd9f059b84feefadaa30\",\r\n    \"firstname\": \"UpdatedFirstName\",\r\n    \"lastname\": \"UpdatedLastName\",\r\n    \"location\": \"NewLocation\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/update",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	]
+}
