@@ -44,6 +44,13 @@ const jwt = require("jsonwebtoken");
  */
 const User = require("./models");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Operations related to users.
+ */
+
 // Registration
 /**
  * Handles user registration.
@@ -52,6 +59,22 @@ const User = require("./models");
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @returns {Object} - JSON response indicating success or failure.
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/User"
+ *     responses:
+ *       '200':
+ *         description: Successful registration.
+ *       '500':
+ *         description: Error registering user.
  */
 router.post("/register", async (req, res) => {
   const { username, firstname, lastname, email, password, birthdate } =
@@ -79,6 +102,58 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// User Update
+/**
+ * Handles user information update.
+ * @function
+ * @name PUT /update
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - JSON response indicating success or failure.
+ * @swagger
+ * /api/update:
+ *   put:
+ *     summary: Update user information.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UserUpdate"
+ *     responses:
+ *       '200':
+ *         description: User information updated successfully.
+ *       '401':
+ *         description: Unauthorized, missing or invalid token.
+ *       '500':
+ *         description: Error updating user information.
+ */
+router.put("/update", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+      new: true,
+    });
+    res.json({
+      message: "User information updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error updating user information" });
+  }
+});
+
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Operations related to user authentication.
+ */
+
 // Login
 /**
  * Handles user login.
@@ -87,6 +162,28 @@ router.post("/register", async (req, res) => {
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  * @returns {Object} - JSON response containing a token and user information if successful.
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Authenticate and login a user.
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Successful login.
+ *       '401':
+ *         description: Invalid username or password.
+ *       '500':
+ *         description: Error logging in.
  */
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -115,31 +212,6 @@ router.post("/login", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: "Error logging in" });
-  }
-});
-
-// User Update
-/**
- * Handles user information update.
- * @function
- * @name PUT /update
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @returns {Object} - JSON response indicating success or failure.
- */
-router.put("/update", authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
-      new: true,
-    });
-    res.json({
-      message: "User information updated successfully",
-      user: updatedUser,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error updating user information" });
   }
 });
 

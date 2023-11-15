@@ -21,6 +21,27 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 /**
+ * CORS middleware for handling Cross-Origin Resource Sharing.
+ * @external cors
+ * @see {@link https://www.npmjs.com/package/cors}
+ */
+const cors = require("cors");
+
+/**
+ * Swagger UI middleware for serving OpenAPI documentation.
+ * @external swaggerUi
+ * @see {@link https://www.npmjs.com/package/swagger-ui-express}
+ */
+const swaggerUi = require("swagger-ui-express");
+
+/**
+ * OpenAPI specification generator for Express routes.
+ * @external swaggerJsdoc
+ * @see {@link https://www.npmjs.com/package/swagger-jsdoc}
+ */
+const swaggerJsdoc = require("swagger-jsdoc");
+
+/**
  * Routes module defining the API routes.
  * @type {module:routes}
  * @see {@link module:routes}
@@ -40,11 +61,40 @@ const app = express();
  */
 const PORT = process.env.PORT || 3000;
 
+/**
+ * CORS options specifying the allowed origins.
+ * @type {Object}
+ */
+const corsOptions = {
+  origin: ["http://localhost:3000"], // Add your allowed origins here
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+// Middleware to enable CORS
+app.use(cors(corsOptions));
+
 // Middleware to parse incoming JSON requests
 app.use(bodyParser.json());
 
 // Routes for API endpoints
 app.use("/api", routes);
+
+// Define OpenAPI options
+const options = {
+  definition: {
+    openapi: "3.0.0",
+  },
+  apis: ["./routes.js"], // Path to the files containing OpenAPI annotations
+};
+
+// Generate OpenAPI specification based on JSDoc comments
+const openapiSpecification = swaggerJsdoc(options);
+
+// Serve OpenAPI documentation using Swagger UI
+app.use("/api-docs", swaggerUi.serve);
+app.get("/api-docs", swaggerUi.setup(openapiSpecification));
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => {
